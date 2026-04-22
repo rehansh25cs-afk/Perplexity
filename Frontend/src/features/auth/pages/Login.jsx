@@ -21,7 +21,7 @@ const Login = () => {
         e.preventDefault()
 
         await handleLogin(email,password)
-        navigate("/")
+        // navigate("/")
         
     }
 
@@ -78,7 +78,7 @@ const Login = () => {
 
                 <button
                     type="submit"
-                    className="mt-7 w-full rounded-xl bg-sky-600 px-4 py-3 font-medium text-white transition hover:bg-sky-500"
+                    className="mt-7 w-full rounded-xl bg-sky-600 px-4 py-3 font-medium text-white transition duration-150 hover:bg-sky-500 active:scale-[0.98] active:bg-sky-700"
                 >
                     Login
                 </button>
@@ -88,7 +88,7 @@ const Login = () => {
                     <button
                         type="button"
                         onClick={() => navigate('/register')}
-                        className="font-medium text-sky-400 transition hover:text-sky-300"
+                        className="font-medium text-sky-400 transition duration-150 hover:text-sky-300 active:scale-[0.98] active:text-sky-200"
                     >
                         Register
                     </button>
