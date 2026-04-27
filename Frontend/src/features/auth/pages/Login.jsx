@@ -17,16 +17,15 @@ const Login = () => {
 
     const { handleLogin } = useAuth()
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        await handleLogin(email,password)
-        // navigate("/")
-        
+        await handleLogin(email, password)
+
     }
 
 
-    if(user && !loading){
+    if (user && !loading) {
         navigate("/")
     }
 
