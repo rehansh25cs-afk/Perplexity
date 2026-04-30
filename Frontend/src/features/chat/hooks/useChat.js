@@ -2,8 +2,9 @@ import { initSocketConnection } from "../services/chat.socket";
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { setChat, setLoading } from "../chat.slice";
-import { sendMessage, getMessages, getChats } from "../services/chat.api"
+import { sendMessage, getMessages, getChats, deleteChat } from "../services/chat.api"
 import { addNewMessage, addMessages, createNewChat, setCurrentChatId } from "../chat.slice";
+import { logout } from "../../auth/services/auth.api";
 
 export const useChat = () => {
 
@@ -96,10 +97,48 @@ export const useChat = () => {
 
     }, [dispatch])
 
+
+
+    const handleLogout = useCallback(async() => {
+        dispatch(setLoading(true))
+
+        await logout();
+
+        dispatch(setChat({}))
+        dispatch(setCurrentChatId(null))
+        dispatch(setLoading(false))
+        
+    }, [dispatch])
+
+
+
+    const handleDeleteChat = useCallback(async(chatId) =>{
+
+        dispatch(setLoading(true))
+        if (!chatId) return;
+
+        await deleteChat(chatId);
+
+        dispatch(setChat(prev => {
+            const updatedChats = { ...prev };
+            delete updatedChats[chatId];
+            return updatedChats;
+        }))
+
+        dispatch(setCurrentChatId(null))
+
+        dispatch(setLoading(false))
+
+    }, [dispatch])
+
+
+
     return {
         initSocketConnection,
         handleGetChats,
         handleSendMessage,
         handleGetMessages,
+        handleDeleteChat,
+        handleLogout
     }
 }

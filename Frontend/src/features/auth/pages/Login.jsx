@@ -39,7 +39,7 @@ const Login = () => {
 
             <form
                 onSubmit={handleSubmit}
-                className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl backdrop-blur"
+                className="w-full flex-col items-center justify-between max-w-md rounded-2xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl backdrop-blur"
             >
                 <h1 className="text-3xl font-semibold tracking-tight text-white">Welcome back</h1>
                 <p className="mt-2 text-sm text-slate-400">Log in to continue to your account.</p>
@@ -78,7 +78,7 @@ const Login = () => {
 
                 {
                     loading ? (
-                        <div className="mt-7 w-full rounded-xl bg-sky-600/70 px-4 py-3 font-medium text-white flex items-center justify-center">
+                        <div className="mt-7 w-fit transition-all-0.5s rounded-xl bg-sky-600/70 px-4 py-3 font-medium text-white flex items-center justify-center">
                             <ClipLoader size={18} loading={loading} color="#fff" />
                         </div>
                     ) : (

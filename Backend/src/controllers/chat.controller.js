@@ -47,7 +47,7 @@ export const getChatsController = async(req,res)=>{
 
     const userId = req.user.id
 
-    const chats = await chatModel.find({user: userId})
+    const chats = await chatModel.find({user: userId}).sort({createdAt: -1})
 
     if(!chats) {
         return res.status(404).json({

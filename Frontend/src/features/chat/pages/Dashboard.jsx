@@ -1,18 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useChat } from '../hooks/useChat';
 import ReactMarkdown from 'react-markdown';
-import { Menu, Send, Compass, Library, Clock3 } from 'lucide-react';
+import { Menu, Send, Compass, Library, Clock3, Trash2 } from 'lucide-react';
 import { MoonLoader } from 'react-spinners';
+import { useNavigate } from "react-router";
+import { setCurrentChatId } from '../chat.slice';
+
 
 const Dashboard = () => {
+
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.auth);
   const chats = useSelector((state) => state.chat.chat);
   const currentChatId = useSelector((state) => state.chat.currentChatId);
 
   const loading = useSelector((state) => state.chat.isLoading)
 
-  const { initSocketConnection, handleGetChats, handleGetMessages, handleSendMessage } = useChat();
+  const { initSocketConnection, handleGetChats, handleGetMessages, handleSendMessage, handleLogout, handleDeleteChat } = useChat();
 
   const [message, setMessage] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -24,7 +32,7 @@ const Dashboard = () => {
 
   const firstName = useMemo(() => displayName.split(' ')[0], [displayName]);
 
-  
+
 
   useEffect(() => {
     initSocketConnection();
@@ -49,14 +57,42 @@ const Dashboard = () => {
   }, [currentChatId, chats]);
 
   const currentMessages = chats?.[currentChatId]?.messages ?? [];
+  const showWelcomeState = !currentChatId || currentMessages.length === 0;
 
-  const handleSubmitMessage = (e) => {
+
+
+  const handleLogOut = async () => {
+
+    const isConfirmed = confirm("Are you sure you want to Logout?")
+    if (isConfirmed) {
+      await handleLogout();
+      navigate("/login")
+    }
+  }
+
+
+  const handleDelete = async (chatId) => {
+    const isConfirmed = confirm("Are you sure you want to delete this conversation?")
+    if (isConfirmed) {
+      await handleDeleteChat(chatId);
+      await handleGetChats();
+    }
+  }
+
+
+  const handleSubmitMessage = async(e) => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    handleSendMessage(message, currentChatId);
+    await handleSendMessage(message, currentChatId);
     setMessage('');
+    await handleGetChats();
   };
+
+
+  const handleNewChat = async () => {
+    dispatch(setCurrentChatId(null));
+  }
 
   return (
     <main className="h-screen bg-[#0a0a0a] text-white overflow-hidden">
@@ -71,8 +107,10 @@ const Dashboard = () => {
                 <h1 className="text-lg font-semibold tracking-tight">perplexity</h1>
               </div>
 
-              <button className="mb-5 w-full rounded-2xl bg-white text-black py-3 text-sm font-medium hover:opacity-90 transition">
-                + New Thread
+              <button
+                onClick={handleNewChat}
+              className="mb-5 w-full rounded-2xl bg-white text-black py-3 text-sm font-medium hover:opacity-90 transition">
+                + New Conversation
               </button>
 
               <div className="space-y-2 mb-6">
@@ -89,19 +127,42 @@ const Dashboard = () => {
 
                 <div className="space-y-2 pr-1 overflow-y-auto no-scrollbar">
                   {Object.values(chats || {}).map((chat) => (
-                    <button
+                    <div
                       key={chat.id}
                       onClick={() => handleGetMessages(chat.id, chats)}
-                      className={`w-full text-left rounded-xl px-3 py-3 text-sm transition ${currentChatId === chat.id
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleGetMessages(chat.id, chats);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      className={`w-full cursor-pointer rounded-xl text-sm transition ${currentChatId === chat.id
                         ? 'bg-white/10 text-white'
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
                         }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <Clock3 size={14} />
-                        <p className="truncate">{chat.title}</p>
+                      <div className="flex items-center gap-2 px-3 py-3">
+                        <div className="flex min-w-0 flex-1 items-center gap-2 text-left">
+                          <Clock3 size={14} />
+                          <p className="truncate">{chat.title}</p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(chat.id);
+                          }}
+                          className="rounded-md p-1.5 text-slate-400 transition hover:bg-white/10 hover:text-red-300"
+                          aria-label={`Delete ${chat.title}`}
+                          title="Delete conversation"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -126,14 +187,24 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <button className="px-5 py-2 rounded-xl bg-white text-black text-sm font-medium hover:opacity-90 transition">
+            <button
+              onClick={handleLogOut}
+              className="px-5 py-2 rounded-xl bg-white text-black text-sm font-medium hover:opacity-90 transition">
               Logout
             </button>
           </header>
 
           <div ref={messageListRef} className="flex-1 overflow-y-auto px-8 py-8 no-scrollbar">
             <div className="max-w-5xl mx-auto space-y-8">
-              {currentMessages.map((msg, index) => {
+              {showWelcomeState ? (
+                <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
+                  <p className="mb-2 text-xs uppercase tracking-[0.22em] text-slate-500">Perplexity</p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Ask anything</h2>
+                  <p className="mt-3 max-w-xl text-sm text-slate-400 sm:text-base">
+                    Start a new conversation 
+                  </p>
+                </div>
+              ) : currentMessages.map((msg, index) => {
                 const isAssistant = msg.role === 'assistant' || msg.role === 'ai';
 
                 return isAssistant ? (
@@ -236,8 +307,8 @@ const Dashboard = () => {
                 >
 
                   {loading ? (
-                  <MoonLoader size={18} loading={loading} color="#000" />):<Send size={18} />}
-                  
+                    <MoonLoader size={18} loading={loading} color="#000" />) : <Send size={18} />}
+
 
                 </button>
               </div>

@@ -12,10 +12,15 @@ app.use(cors({
     credentials: true
 }))
 
+app.use(express.static("./public"))
+
 app.use("/api/auth", authRouter)
 
 app.use("/api/chats", chatRouter)
 
 
+app.use("*name", (req, res) => {
+    res.sendFile("../public/index.html");
+});
 
 export default app
