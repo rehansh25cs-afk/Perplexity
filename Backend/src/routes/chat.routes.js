@@ -1,8 +1,6 @@
 import {Router} from "express"
 import { identifyUser } from "../middlewares/auth.middleware.js"
 import { deleteChatController, getChatsController, getMessagesController, messageController } from "../controllers/chat.controller.js"
-import { getMe } from "../../../Frontend/src/features/auth/services/auth.api.js"
-
 const chatRouter = Router()
 
 
