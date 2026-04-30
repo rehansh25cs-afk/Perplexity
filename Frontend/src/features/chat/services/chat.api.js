@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000/api/chats",
+    baseURL: "https://perplexity-1-4jje.onrender.com/api/chats",
     withCredentials: true,
 })
 
