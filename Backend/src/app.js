@@ -10,7 +10,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: "https://perplexity-1-4jje.onrender.com",
+    origin: "https://perplexity-1.4jje.onrender.com",
     credentials: true
 }))
 
