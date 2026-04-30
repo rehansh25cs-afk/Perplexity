@@ -14,18 +14,12 @@ app.use(cors({
     credentials: true
 }))
 
-app.use(express.static(path.resolve('./public')))
 
 app.use("/api/auth", authRouter)
 
 app.use("/api/chats", chatRouter)
 
 
-// serve frontend index for any unknown route (single-page app)
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-app.use("*name", (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-});
+
 
 export default app
