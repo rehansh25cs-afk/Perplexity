@@ -24,9 +24,11 @@ export const useAuth = () => {
     const handleRegister = async (email, username, password) => {
         try {
             dispatch(setLoading(true))
-            await register(email, username, password)
+            const data = await register(email, username, password)
+            return data
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Registration failed"))
+            throw error
         } finally {
             dispatch(setLoading(false))
         }

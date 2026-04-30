@@ -78,7 +78,7 @@ export const verifyEmailController = async (req, res) => {
         const html = `
         <h1>Email Verified Successfully</h1>
         <p>Your email has been successfully verified. You can now log in to your account.</p>
-        <a href="http://localhost:3000/api/auth/login">Go to Login</a>
+        <a href="http://localhost:5173/login">Go to Login</a>
     `
 
         return res.send(html)

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../Hooks/useAuth'
 import { useSelector } from 'react-redux'
+import { ClipLoader } from 'react-spinners'
 
 
 const Login = () => {
@@ -75,12 +76,22 @@ const Login = () => {
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    className="mt-7 w-full rounded-xl bg-sky-600 px-4 py-3 font-medium text-white transition duration-150 hover:bg-sky-500 active:scale-[0.98] active:bg-sky-700"
-                >
-                    Login
-                </button>
+                {
+                    loading ? (
+                        <div className="mt-7 w-full rounded-xl bg-sky-600/70 px-4 py-3 font-medium text-white flex items-center justify-center">
+                            <ClipLoader size={18} loading={loading} color="#fff" />
+                        </div>
+                    ) : (
+                        <button
+                            type="submit"
+                            className="mt-7 w-full rounded-xl bg-sky-600 px-4 py-3 font-medium text-white transition duration-150 hover:bg-sky-500 active:scale-[0.98] active:bg-sky-700"
+                        >
+                            Login
+                        </button>
+                    )
+                }
+
+
 
                 <p className="mt-6 text-center text-sm text-slate-400">
                     Don&apos;t have an account?{' '}

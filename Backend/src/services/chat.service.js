@@ -1,6 +1,8 @@
-import { ChatGoogleGenerativeAI,  } from "@langchain/google-genai";
+import { ChatGoogleGenerativeAI, } from "@langchain/google-genai";
 import { ChatMistralAI } from "@langchain/mistralai";
-import { AIMessage, HumanMessage, SystemMessage } from "langchain";
+import { AIMessage, createAgent, HumanMessage, SystemMessage, tool } from "langchain";
+import * as z from "zod";
+import { searchInternet } from "./interner.service.js";
 
 const GEMENI_model = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash",
@@ -13,21 +15,39 @@ const Mistral_model = new ChatMistralAI({
 })
 
 
+const searchInternetTool = tool(
+  async ({ query }) => searchInternet(query),
+  {
+    name: "search-internet",
+    description: "Search the internet for relevant information to answer user queries.",
+    schema: z.object({
+      query: z.string().describe("The search query provided by the user.")
+    })
+  }
+)
+
+
+const agent = createAgent({
+  model: Mistral_model,
+  tools: [searchInternetTool]
+})
+
+
 export const generateResponse = async (messages) => {
 
-  const chatHistory = messages.map((message) => {
-    if (message.role === "ai") {
-      return new AIMessage(message.content);
-    }
 
-    return new HumanMessage(message.content);
-  });
 
-  const response = await Mistral_model.invoke([
-    ...chatHistory
-  ]);
+  const response = await agent.invoke({
+    messages: messages.map(msg => {
+      if (msg.role === "user") {
+        return new HumanMessage(msg.content)
+      } else {
+        return new AIMessage(msg.content)
+      }
+    })
+    });
 
-  return response.text;
+  return response.messages[response.messages.length - 1].text
 
 }
 
