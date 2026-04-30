@@ -20,7 +20,7 @@ app.use("/api/chats", chatRouter)
 
 
 app.use("*name", (req, res) => {
-    res.sendFile("../public/index.html");
+    res.sendFile("./public/index.html");
 });
 
 export default app
