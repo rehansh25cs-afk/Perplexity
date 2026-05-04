@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useChat } from '../hooks/useChat';
 import ReactMarkdown from 'react-markdown';
-import { Menu, Send, Compass, Library, Clock3, Trash2 } from 'lucide-react';
+import { Menu, Send, Compass, Library, Clock3, Trash2, LogOut } from 'lucide-react';
 import { MoonLoader } from 'react-spinners';
 import { useNavigate } from "react-router";
 import { setCurrentChatId } from '../chat.slice';
@@ -24,6 +24,7 @@ const Dashboard = () => {
 
   const [message, setMessage] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const messageListRef = useRef(null);
 
   const displayName = useMemo(() => {
@@ -172,35 +173,57 @@ const Dashboard = () => {
 
         <section className="flex-1 flex flex-col bg-[#0f0f0f]">
 
-          <header className="h-17.5 px-6 border-b border-white/5 flex items-center justify-between bg-[#0f0f0f]">
-            <div className="flex items-center gap-4">
+          <header className="px-4 md:px-6 py-4 border-b border-white/5 flex items-center justify-between bg-[#0f0f0f] relative">
+            <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
               <button
                 onClick={() => setSidebarOpen((prev) => !prev)}
-                className="h-10 w-10 rounded-xl hover:bg-white/5 flex items-center justify-center transition"
+                className="h-10 w-10 rounded-xl hover:bg-white/5 flex items-center justify-center transition flex-shrink-0"
               >
                 <Menu size={20} />
               </button>
 
-              <div>
-                <p className="text-sm text-slate-400">Ask anything</p>
-                <p className="text-sm font-medium">Welcome back, {firstName}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs md:text-sm text-slate-400 hidden sm:block">Ask anything</p>
+                <p className="text-xs md:text-sm font-medium truncate">Welcome back, {firstName}</p>
               </div>
             </div>
 
-            <button
-              onClick={handleLogOut}
-              className="px-5 py-2 rounded-xl bg-white text-black text-sm font-medium hover:opacity-90 transition">
-              Logout
-            </button>
+            <div className="relative flex-shrink-0">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="md:hidden h-10 w-10 rounded-xl hover:bg-white/5 flex items-center justify-center transition"
+                title="User menu"
+              >
+                <LogOut size={20} />
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 top-12 bg-[#1b1b1b] border border-white/10 rounded-xl shadow-lg z-50 w-40">
+                  <button
+                    onClick={handleLogOut}
+                    className="w-full px-4 py-3 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2 rounded-xl m-2"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
+
+              <button
+                onClick={handleLogOut}
+                className="hidden md:block px-5 py-2 rounded-xl bg-white text-black text-sm font-medium hover:opacity-90 transition">
+                Logout
+              </button>
+            </div>
           </header>
 
-          <div ref={messageListRef} className="flex-1 overflow-y-auto px-8 py-8 no-scrollbar">
-            <div className="max-w-5xl mx-auto space-y-8">
+          <div ref={messageListRef} className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 no-scrollbar">
+            <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
               {showWelcomeState ? (
-                <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
+                <div className="flex min-h-[50vh] flex-col items-center justify-center text-center px-4">
                   <p className="mb-2 text-xs uppercase tracking-[0.22em] text-slate-500">Perplexity</p>
-                  <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Ask anything</h2>
-                  <p className="mt-3 max-w-xl text-sm text-slate-400 sm:text-base">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">Ask anything</h2>
+                  <p className="mt-3 max-w-sm sm:max-w-xl text-xs sm:text-sm md:text-base text-slate-400 px-2">
                     Start a new conversation 
                   </p>
                 </div>
@@ -208,42 +231,42 @@ const Dashboard = () => {
                 const isAssistant = msg.role === 'assistant' || msg.role === 'ai';
 
                 return isAssistant ? (
-                  <div key={index} className="w-full pb-6 flex justify-center">
-                    <div className="w-full max-w-3xl px-1 sm:px-2">
+                  <div key={index} className="w-full pb-4 sm:pb-6 md:pb-6 flex justify-center">
+                    <div className="w-full max-w-3xl px-2 sm:px-3 md:px-2">
                       <ReactMarkdown
                         components={{
                           p: ({ children }) => (
-                            <p className="text-[17px] leading-loose font-light text-slate-200 mb-5 tracking-[0.01em]">
+                            <p className="text-sm sm:text-base md:text-[17px] leading-relaxed sm:leading-loose font-light text-slate-200 mb-3 sm:mb-5 tracking-[0.01em]">
                               {children}
                             </p>
                           ),
                           h1: ({ children }) => (
-                            <h1 className="text-[40px] leading-tight font-medium text-white mb-5 tracking-tight">
+                            <h1 className="text-2xl sm:text-3xl md:text-[40px] leading-tight font-medium text-white mb-3 sm:mb-5 tracking-tight">
                               {children}
                             </h1>
                           ),
                           h2: ({ children }) => (
-                            <h2 className="text-[30px] leading-tight font-medium text-white mb-4 tracking-tight">
+                            <h2 className="text-xl sm:text-2xl md:text-[30px] leading-tight font-medium text-white mb-2 sm:mb-4 tracking-tight">
                               {children}
                             </h2>
                           ),
                           h3: ({ children }) => (
-                            <h3 className="text-[22px] leading-tight font-medium text-white mb-3 tracking-tight">
+                            <h3 className="text-lg sm:text-xl md:text-[22px] leading-tight font-medium text-white mb-2 sm:mb-3 tracking-tight">
                               {children}
                             </h3>
                           ),
                           ul: ({ children }) => (
-                            <ul className="list-disc pl-6 space-y-2 mb-5 text-slate-200 leading-[1.9]">
+                            <ul className="list-disc pl-4 sm:pl-6 space-y-1 sm:space-y-2 mb-3 sm:mb-5 text-slate-200 leading-[1.8] sm:leading-[1.9]">
                               {children}
                             </ul>
                           ),
                           ol: ({ children }) => (
-                            <ol className="list-decimal pl-6 space-y-2 mb-5 text-slate-200 leading-[1.9]">
+                            <ol className="list-decimal pl-4 sm:pl-6 space-y-1 sm:space-y-2 mb-3 sm:mb-5 text-slate-200 leading-[1.8] sm:leading-[1.9]">
                               {children}
                             </ol>
                           ),
                           li: ({ children }) => (
-                            <li className="pl-1">
+                            <li className="pl-1 text-sm sm:text-base">
                               {children}
                             </li>
                           ),
@@ -254,22 +277,22 @@ const Dashboard = () => {
                           ),
                           code: ({ inline, children }) =>
                             inline ? (
-                              <code className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[0.95em] text-[#9ecbff]">
+                              <code className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[0.9em] sm:text-[0.95em] text-[#9ecbff] break-words">
                                 {children}
                               </code>
                             ) : (
-                              <code className="block overflow-x-auto rounded-2xl border border-white/10 bg-[#111111] px-4 py-3 text-sm text-[#c9ddff]">
+                              <code className="block overflow-x-auto rounded-lg sm:rounded-2xl border border-white/10 bg-[#111111] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-[#c9ddff]">
                                 {children}
                               </code>
                             ),
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l border-white/10 pl-4 italic text-slate-400 mb-5">
+                            <blockquote className="border-l border-white/10 pl-3 sm:pl-4 italic text-slate-400 mb-3 sm:mb-5 text-sm sm:text-base">
                               {children}
                             </blockquote>
                           ),
-                          hr: () => <hr className="my-6 border-white/10" />,
+                          hr: () => <hr className="my-4 sm:my-6 border-white/10" />,
                           a: ({ children, href }) => (
-                            <a href={href} className="text-[#9ecbff] underline decoration-white/20 underline-offset-4">
+                            <a href={href} className="text-[#9ecbff] underline decoration-white/20 underline-offset-4 break-words">
                               {children}
                             </a>
                           ),
@@ -281,7 +304,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div key={index} className="flex justify-end mt-2">
-                    <div className="max-w-xl rounded-[22px] bg-[#1b1b1b] px-6 py-4 text-[15px] font-normal text-slate-100 border border-white/5 shadow-sm">
+                    <div className="max-w-xs sm:max-w-sm md:max-w-xl rounded-xl sm:rounded-[22px] bg-[#1b1b1b] px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm md:text-[15px] font-normal text-slate-100 border border-white/5 shadow-sm">
                       {msg.content}
                     </div>
                   </div>
@@ -290,9 +313,9 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <footer className="px-6 pb-6 pt-4 border-t border-white/5 bg-[#0f0f0f]">
+          <footer className="px-3 sm:px-6 md:px-6 pb-4 sm:pb-6 md:pb-6 pt-3 sm:pt-4 md:pt-4 border-t border-white/5 bg-[#0f0f0f]">
             <form onSubmit={handleSubmitMessage} className="max-w-4xl mx-auto">
-              <div className="rounded-[28px] border border-white/10 bg-[#171717] px-6 py-5 flex items-center gap-4 shadow-xl">
+              <div className="rounded-2xl sm:rounded-[28px] border border-white/10 bg-[#171717] px-4 sm:px-6 py-3 sm:py-5 flex items-center gap-3 sm:gap-4 shadow-xl">
                 <input
                   type="text"
                   value={message}
