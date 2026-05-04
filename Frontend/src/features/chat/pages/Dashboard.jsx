@@ -97,10 +97,18 @@ const Dashboard = () => {
 
   return (
     <main className="h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      <div className="flex h-full">
+      <div className="flex h-full relative">
+
+        {/* Backdrop for mobile */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 md:hidden bg-black/50 z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <aside
-          className={`${sidebarOpen ? 'w-70 p-4 border-r border-white/10' : 'w-0 p-0 border-none overflow-hidden'} transition-all duration-300 bg-[#111111] flex flex-col`}
+          className={`${sidebarOpen ? 'w-70 p-4 border-r border-white/10' : 'w-0 p-0 border-none overflow-hidden'} fixed md:relative md:z-auto z-50 h-full transition-all duration-300 bg-[#111111] flex flex-col`}
         >
           {sidebarOpen && (
             <>
