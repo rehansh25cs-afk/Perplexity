@@ -35,7 +35,7 @@ export const registerController = async (req, res) => {
         html: `
             <h1>Welcome to our app, ${username}!</h1>
             <p>Thank you for registering. Please verify your email address by clicking the link below:</p>
-            <a href="http://localhost:3000/api/auth/verify-email?token=${emailVarificationToken}">Verify Email</a>
+            <a href="https://perplexity-1-4jje.onrender.com/api/auth/verify-email?token=${emailVarificationToken}">Verify Email</a>
         `
     })
 
