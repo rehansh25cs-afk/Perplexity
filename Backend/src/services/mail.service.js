@@ -1,3 +1,4 @@
+console.log("Email file loaded");
 import nodemailer from "nodemailer"
 
 const transporter = nodemailer.createTransport({
