@@ -78,7 +78,7 @@ const Login = () => {
 
                 {
                     loading ? (
-                        <div className="mt-7 w-fit transition-all-0.5s rounded-xl bg-sky-600/70 px-4 py-3 font-medium text-white flex items-center justify-center">
+                        <div className="mt-7 transition-all-0.5s rounded-xl bg-sky-600/70 px-4 py-3 font-medium text-white flex items-center justify-center">
                             <ClipLoader size={18} loading={loading} color="#fff" />
                         </div>
                     ) : (
